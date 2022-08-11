@@ -86,5 +86,7 @@ def downloader(spotify_url, location):
 		except FileExistsError:
 			print(f'Song "{url_name}" already exists in this folder, continuing...')
 if __name__ == '__main__':
-	downloader(input('\nPlease enter the Spotify playlist link.\n\n>'), input(f'\nPlease enter the location to download the songs to.\nLeave text empty for default location: "{default_location}"\n\n>'))
+	playlist_link = input('\nPlease enter the Spotify playlist link.\n\n>')
+	file_path = input(f'\nPlease enter the location to download the songs to.\nLeave text empty for default location: "{default_location}"\n\n>')
+	downloader(playlist_link, file_path if file_path != '' else default_location)
 	input('\nDone! Press Enter to exit.')
