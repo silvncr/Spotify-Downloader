@@ -69,7 +69,7 @@ def downloader(spotify_url, location):
 	try:
 		makedirs(path)
 	except FileExistsError:
-		print(f'\nFolder already exists; located at: "{path}". Continuing...')
+		print(f'\nFolder already exists; located at: "{path}".')
 	else:
 		print(f'\nFolder created successfully! Located at: "{path}".')
 	dict_of_playlist = track[1]
@@ -87,4 +87,4 @@ def downloader(spotify_url, location):
 			print(f'Song "{url_name}" already exists in this folder, continuing...')
 if __name__ == '__main__':
 	downloader(input('\nPlease enter the Spotify playlist link.\n\n>'), input(f'\nPlease enter the location to download the songs to.\nLeave text empty for default location: "{default_location}"\n\n>'))
-	print('\nDone!')
+	input('\nDone! Press Enter to exit.')
