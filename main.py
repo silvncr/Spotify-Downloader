@@ -1,4 +1,5 @@
 from base64 import b64encode
+from getpass import getuser
 from json import dump, load
 from os import makedirs
 from pytube import YouTube
@@ -7,6 +8,7 @@ from requests import get, post
 from urllib.error import HTTPError
 from urllib.parse import urlencode
 from urllib.request import urlopen
+default_location = r'C:\Users\{}\Music'.format(getuser())
 def get_playlists(spotify_url):
 	with open('SECRETS.json', 'r') as f:
 		spotify_key = load(f)['SPOTIFY_KEY']
@@ -50,31 +52,39 @@ def get_access_token():
 	r = post('https://accounts.spotify.com/api/token', headers=headers, data=data)
 	token = r.json()['access_token']
 	updated_dict = {
-		"spotify_client_id": f"{spotify_client_id}",
-		"spotify_client_secret": f"{spotify_client_secret}",
-		"SPOTIFY_KEY": token
+		'spotify_client_id': spotify_client_id,
+		'spotify_client_secret': spotify_client_secret,
+		'SPOTIFY_KEY': token
 	}
 	with open('SECRETS.json', 'w') as f:
-		dump(updated_dict, f)
+		dump(updated_dict, f, indent=4)
 def downloader(spotify_url, location):
+	print('\nAttempting to find song links...')
 	try:
 		track = get_playlists(spotify_url)
 	except TypeError:
 		get_access_token()
 		track = get_playlists(spotify_url)
 	path = f'{location}\\{track[0].replace(" ", "-")}'
-	makedirs(path)
+	try:
+		makedirs(path)
+	except FileExistsError:
+		print(f'\nFolder already exists; located at: "{path}". Continuing...')
+	else:
+		print(f'\nFolder created successfully! Located at: "{path}".')
 	dict_of_playlist = track[1]
+	print('\nDownloading songs from playlist...\n')
 	for url_name in dict_of_playlist:
 		try:
 			yt = YouTube(dict_of_playlist[url_name])
 			video = yt.streams.filter(only_audio=True).first()
 			video.download(path)
-			print(f"Downloaded {url_name} at -> {path}")
+			print(f'Downloaded "{url_name}".')
 		except HTTPError:
-			print(f'Couldn\'t download "{url_name}", continuing')
+			print(f'Couldn\'t download "{url_name}", continuing...')
 			continue
 		except FileExistsError:
 			print(f'Song "{url_name}" already exists in this folder, continuing...')
 if __name__ == '__main__':
-	downloader(input('Spotify Playlist URL: '), input('Music Folder Path: '))
+	downloader(input('\nPlease enter the Spotify playlist link.\n\n>'), input(f'\nPlease enter the location to download the songs to.\nLeave text empty for default location: "{default_location}"\n\n>'))
+	print('\nDone!')
