@@ -65,6 +65,12 @@ def downloader(spotify_url, location):
 	except TypeError:
 		get_access_token()
 		track = get_playlists(spotify_url)
+	except (HTTPError, ConnectionError):
+		print('\nCouldn\'t connect to Spotify, please try again later.')
+		return
+	except IndexError:
+		print('\nCouldn\'t download that playlist, please try again later.')
+		return
 	path = f'{location}\\{track[0].replace(" ", "-")}'
 	try:
 		makedirs(path)
@@ -88,5 +94,9 @@ def downloader(spotify_url, location):
 if __name__ == '__main__':
 	playlist_link = input('\nPlease enter the Spotify playlist link.\n\n>')
 	file_path = input(f'\nPlease enter the location to download the songs to.\nLeave text empty for default location: "{default_location}"\n\n>')
-	downloader(playlist_link, file_path if file_path != '' else default_location)
-	input('\nDone! Press Enter to exit.')
+	try:
+		downloader(playlist_link, file_path if file_path != '' else default_location)
+	except Exception:
+		print('\nCouldn\'t connect to Spotify, please try again later.')
+	finally:
+		input('\nPress Enter to exit.')
