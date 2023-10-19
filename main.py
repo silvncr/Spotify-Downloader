@@ -15,7 +15,7 @@ def get_playlists(spotify_url):
 		spotify_key = load(f)['SPOTIFY_KEY']
 	playlist_id = spotify_url.split('/')[-1].split('?')[0]
 	r = get(f"https://api.spotify.com/v1/playlists/{playlist_id}", headers={'Authorization': f'Bearer {spotify_key}'})
-	if r.status_code in [400, 401]:
+	if r.status_code in {400, 401}:
 		raise TypeError('Invalid Spotify Token')
 	returned_tracks = {}
 	playlist_name = r.json()['name']
